@@ -1,18 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { NotificationData, SocialProofWidgetProps } from '../types'
-
-type UseNotificationsOptions = {
-    data: NotificationData[]
-    delay: number
-    duration: number
-    loop?: boolean
-    random?: boolean
-    delayBeforeStart?: number
-    onShow?: (data: NotificationData, index: number) => void
-    onHide?: (data: NotificationData, index: number) => void
-    onEnd?: () => void
-    onLoop?: () => void
-}
+import type { NotificationData, UseNotificationsOptions } from '../types'
 
 export function useNotifications({
     data,
@@ -28,53 +15,63 @@ export function useNotifications({
 }: UseNotificationsOptions) {
     const [currentIndex, setCurrentIndex] = useState<number | null>(null)
     const [visible, setVisible] = useState(false)
-    const dataRef = useRef<NotificationData[]>([])
 
+    const dataRef = useRef<NotificationData[]>([])
+    const indexRef = useRef(0)
+    const hideTimerRef = useRef<NodeJS.Timeout | null>(null)
+    const nextTimerRef = useRef<NodeJS.Timeout | null>(null)
+    const startTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+    // Setup logic
     useEffect(() => {
         if (!data || data.length === 0) return
 
-        const shuffled = random ? [...data].sort(() => Math.random() - 0.5) : [...data]
-        dataRef.current = shuffled
+        // Reset refs
+        indexRef.current = 0
+        setVisible(false)
+        setCurrentIndex(null)
 
-        let index = 0
+        const list = random ? [...data].sort(() => Math.random() - 0.5) : [...data]
+        dataRef.current = list
 
-        const start = () => {
-            const showNext = () => {
-                const currentItem = dataRef.current[index]
-                if (!currentItem) {
-                    if (loop) {
-                        onLoop?.()
-                        index = 0
-                        showNext()
-                        return
-                    } else {
-                        onEnd?.()
-                        return
-                    }
+        const showNext = () => {
+            const current = dataRef.current[indexRef.current]
+
+            if (!current) {
+                if (loop) {
+                    onLoop?.()
+                    indexRef.current = 0
+                    showNext()
+                } else {
+                    onEnd?.()
                 }
-
-                setCurrentIndex(index)
-                setVisible(true)
-                onShow?.(currentItem, index)
-
-                const hideTimeout = setTimeout(() => {
-                    setVisible(false)
-                    onHide?.(currentItem, index)
-
-                    index++
-                    setTimeout(showNext, delay)
-                }, duration)
+                return
             }
 
-            showNext()
+            setCurrentIndex(indexRef.current)
+            setVisible(true)
+            onShow?.(current, indexRef.current)
+
+            // Schedule hiding
+            hideTimerRef.current = setTimeout(() => {
+                setVisible(false)
+                onHide?.(current, indexRef.current)
+
+                indexRef.current++
+                // Schedule next message
+                nextTimerRef.current = setTimeout(showNext, delay)
+            }, duration)
         }
 
-        const delayTimeout = setTimeout(start, delayBeforeStart)
+        // Start after optional delay
+        startTimerRef.current = setTimeout(showNext, delayBeforeStart)
 
         return () => {
-            clearTimeout(delayTimeout)
+            clearTimeout(startTimerRef.current!)
+            clearTimeout(hideTimerRef.current!)
+            clearTimeout(nextTimerRef.current!)
         }
-    }, [data, delay, duration, loop, random])
+    }, [data, delay, duration, loop, random, delayBeforeStart])
 
     return {
         currentIndex,
