@@ -1,54 +1,81 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight and customizable React component to display social proof notifications — like “Someone just bought...” messages — that help boost trust and conversions.
 
-Currently, two official plugins are available:
+[![NPM version](https://img.shields.io/npm/v/react-social-proof?color=blue)](https://www.npmjs.com/package/react-social-proof)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/react-social-proof)](https://bundlephobia.com/package/react-social-proof)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
+### ✨ Features
 
-## Expanding the ESLint configuration
+- 🚀 Easy to integrate
+- 🎨 Fully customizable styles and templates
+- 🎯 Built-in animations and theming
+- 🔁 Looping and random order support
+- 🧩 Supports custom `render` and `children` functions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+#### 📦 Installation
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+pnpm add react-social-proof
+# or
+npm install react-social-proof
+# or
+yarn add react-social-proof
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 🔧 Usage Example
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```tsx
+import { SocialProofWidget } from 'react-social-proof'
+
+const notifications = [
+  { name: 'Alice', action: 'purchased', product: 'Sneakers' },
+  { name: 'Bob', action: 'signed up' },
+  // more items...
+]
+
+function App() {
+  return (
+    <SocialProofWidget
+      data={notifications}
+      position="bottom-left"
+      animation="slide"
+      delay={3000}
+      duration={5000}
+      theme="light"
+      render={(item) => (
+        <div>
+          {item.name} just {item.action}!
+        </div>
+      )}
+    />
+  )
+}
 ```
+
+---
+
+## ⚙️ Props
+
+| Prop               | Type                                                       | Description                                      |
+|--------------------|------------------------------------------------------------|--------------------------------------------------|
+| `data`             | `NotificationData[]`                                       | Array of notification items                     |
+| `delay`            | `number`                                                   | Delay between notifications                     |
+| `duration`         | `number`                                                   | Time each notification stays visible            |
+| `loop`             | `boolean`                                                  | Whether to loop after the end                   |
+| `random`           | `boolean`                                                  | Randomize the order of notifications            |
+| `delayBeforeStart` | `number`                                                   | Initial delay before showing first notification |
+| `position`         | `'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | Widget placement                                |
+| `animation`        | `'fade' \| 'slide' \| 'none'`                              | Entry/exit animation                            |
+| `theme`            | `'light' \| 'dark' \| 'custom'`                            | Built-in theme or fully custom                  |
+| `className`        | `string`                                                   | Custom CSS class                                |
+| `style`            | `CSSProperties`                                            | Inline styles                                   |
+| `children`         | `(data, index) => ReactNode`                               | Custom render function (overrides `render`)     |
+| `render`           | `(data, index) => ReactNode`                               | Alternative render function                     |
+| `template`         | `string`                                                   | String-based template                           |
+| `onShow`           | `(data, index) => void`                                    | Triggered when a notification is shown          |
+| `onHide`           | `(data, index) => void`                                    | Triggered when a notification is hidden         |
+| `onEnd`            | `() => void`                                               | Called after all notifications end              |
+| `onLoop`           | `() => void`                                               | Called every time a loop restarts               |
