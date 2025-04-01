@@ -1,24 +1,25 @@
 {
   "name": "react-social-proof",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "private": false,
   "main": "./dist/react-social-proof.umd.js",
   "module": "./dist/react-social-proof.es.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/react-social-proof.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "exports": {
     ".": {
       "import": "./dist/react-social-proof.es.js",
-      "require": "./dist/react-social-proof.umd.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/react-social-proof.umd.js"
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
+    "roll-types": "api-extractor run --local",
     "dev": "vite",
-    "build": "pnpm type && vite build",
+    "build": "vite build && pnpm type && pnpm roll-types && rm -rf temp",
     "type": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@microsoft/api-extractor": "^7.52.2",
     "@types/node": "^22.13.14",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
