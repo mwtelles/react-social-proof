@@ -13,7 +13,8 @@
   "exports": {
     ".": {
       "import": "./dist/react-social-proof.es.js",
-      "require": "./dist/react-social-proof.umd.js"
+      "require": "./dist/react-social-proof.umd.js",
+      "types": "./dist/react-social-proof.d.ts"
     }
   },
   "scripts": {
